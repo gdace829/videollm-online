@@ -13,6 +13,8 @@ class LiveInfer:
     def __init__(self, ) -> None:
         args = parse_args()
         self.model, self.tokenizer = build_model_and_tokenizer(is_training=False, set_vision_inside=True, **asdict(args))
+        self.model.connector.to_empty(device="cpu")
+        self.model.connector.apply(self.model._init_weights)
         self.model.to('cuda')
         
         # visual

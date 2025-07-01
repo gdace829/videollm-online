@@ -213,7 +213,13 @@ def build_live(
         model.print_trainable_parameters()
     else:
         if resume_from_checkpoint:
-            model = PeftModel.from_pretrained(model, resume_from_checkpoint, is_trainable=False)
+            # 使用 Hugging Face 的 peft 库从指定的检查点加载 PEFT 参数（如 LoRA 权重）。
+            # model: 是基础模型（base model），比如 LLaMA 或 Qwen。
+            # resume_from_checkpoint: 是 PEFT 检查点路径（通常是包含 adapter_config.json, adapter_model.bin 的文件夹）。
+            # is_trainable=False: 表示加载后这些 PEFT 参数 不会被更新（冻结）。
+            hf_token = os.getenv("HUGGINGFACE_TOKEN")
+ 
+            model = PeftModel.from_pretrained(model, resume_from_checkpoint, is_trainable=False,token=hf_token)
         else:
             logger.warning(f'!!! Fail to load checkpoint: {resume_from_checkpoint}. Return a new initialized model.')
         if set_vision_inside:
